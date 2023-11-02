@@ -5,6 +5,7 @@ import com.example.gym.util.JSONData;
 import com.example.gym.util.UtilService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,15 +17,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@Data
 @Component
 public class InMemoryStorage {
     private final Map<UUID, Trainer> trainerStorage = new HashMap<>();
+
     private final Map<UUID, Trainee> traineeStorage = new HashMap<>();
+
     private final Map<UUID, Training> trainingStorage = new HashMap<>();
+
     private final Map<UUID, User> userStorage = new HashMap<>();
+
     private final Map<UUID, TrainingType> trainingTypeStorage = new HashMap<>();
 
     private final UtilService utilService;
+
     private static final Logger logger = LoggerFactory.getLogger(InMemoryStorage.class);
 
     @Value("${user.file.path}")
@@ -33,7 +40,6 @@ public class InMemoryStorage {
     public InMemoryStorage(UtilService utilService) {
         this.utilService = utilService;
     }
-
 
     @PostConstruct
     public void initializeStorage() {
@@ -69,25 +75,5 @@ public class InMemoryStorage {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public Map<UUID, Trainer> getTrainerStorage() {
-        return trainerStorage;
-    }
-
-    public Map<UUID, Trainee> getTraineeStorage() {
-        return traineeStorage;
-    }
-
-    public Map<UUID, Training> getTrainingStorage() {
-        return trainingStorage;
-    }
-
-    public Map<UUID, User> getUserStorage() {
-        return userStorage;
-    }
-
-    public Map<UUID, TrainingType> getTrainingTypeStorage() {
-        return trainingTypeStorage;
     }
 }

@@ -21,7 +21,6 @@ public class TrainerService {
     @Autowired
     private TrainerDAO trainerDAO;
 
-
     /**
      * Save a new Trainer entity based on the provided TrainerRequestDto.
      *

@@ -21,7 +21,6 @@ public class TrainingService {
     @Autowired
     private TrainingDAO trainingDAO;
 
-
     /**
      * Creates and saves a new training record based on the provided TrainingRequestDto.
      *

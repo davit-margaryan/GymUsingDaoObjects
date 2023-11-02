@@ -17,5 +17,4 @@ public interface TrainerDAO {
     void delete(UUID id);
 
     Trainer update(UUID id, TrainerRequestDto trainerRequestDto);
-
 }
