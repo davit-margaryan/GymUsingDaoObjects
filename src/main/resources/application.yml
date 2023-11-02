@@ -1,0 +1,6 @@
+server:
+  port: 8083
+
+user:
+  file:
+    path: C:\Users\User\Desktop\gym\src\main\resources\users.json
