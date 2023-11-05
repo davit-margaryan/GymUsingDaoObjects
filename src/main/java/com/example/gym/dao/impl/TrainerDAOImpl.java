@@ -3,7 +3,7 @@ package com.example.gym.dao.impl;
 import com.example.gym.dao.TrainerDAO;
 import com.example.gym.dto.TrainerRequestDto;
 import com.example.gym.exception.InvalidInputException;
-import com.example.gym.exception.UserNotFoundException;
+import com.example.gym.exception.NotFoundException;
 import com.example.gym.models.Trainer;
 import com.example.gym.models.User;
 import com.example.gym.service.InMemoryStorage;
@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Implementation of the TrainerDAO interface for managing Trainer entities.
@@ -54,15 +51,10 @@ public class TrainerDAOImpl implements TrainerDAO {
             logger.error("Invalid firstname or lastname ");
             throw new InvalidInputException("Invalid firstname or lastname");
         }
-        user.setId(utilService.generateUniqueKey(userStorage));
         trainer.setId(utilService.generateUniqueKey(trainerStorage));
-        trainer.setUserId(user.getId());
-        user.setFirstName(trainerRequestDto.getFirstName());
-        user.setLastName(trainerRequestDto.getLastName());
-        utilService.generateUsername(user.getFirstName(), user.getLastName(), userStorage);
-        utilService.generateRandomPassword(10);
+        trainer.setUserId(saveUser(user, trainerRequestDto));
+        trainer.setSpecialization(trainerRequestDto.getSpecialization());
         trainerStorage.put(trainer.getId(), trainer);
-        userStorage.put(user.getId(), user);
         logger.info("Trainer successfully created");
         return trainer;
     }
@@ -74,7 +66,7 @@ public class TrainerDAOImpl implements TrainerDAO {
 
     @Override
     public List<Trainer> findAll() {
-        return (List<Trainer>) trainerStorage.values();
+        return new ArrayList<>(trainerStorage.values());
     }
 
     @Override
@@ -85,13 +77,14 @@ public class TrainerDAOImpl implements TrainerDAO {
             trainerStorage.remove(id);
         } else {
             logger.error("Trainer not found");
+            throw new NotFoundException("Trainer not found");
         }
     }
 
     @Override
     public Trainer update(UUID id, TrainerRequestDto trainerRequestDto) {
         if (!trainerStorage.containsKey(id)) {
-            throw new UserNotFoundException("Trainer not found with ID: " + id);
+            throw new NotFoundException("Trainer not found with ID: " + id);
         }
         Trainer trainer = trainerStorage.get(id);
         UUID userId = trainer.getUserId();
@@ -107,6 +100,17 @@ public class TrainerDAOImpl implements TrainerDAO {
         userStorage.put(userId, user);
         logger.info("Trainer successfully updated");
         return trainer;
+    }
+
+    private UUID saveUser(User user, TrainerRequestDto trainerRequestDto) {
+        user.setId(utilService.generateUniqueKey(userStorage));
+        user.setFirstName(trainerRequestDto.getFirstName());
+        user.setLastName(trainerRequestDto.getLastName());
+        user.setUsername(utilService.generateUsername(user.getFirstName(), user.getLastName(), userStorage));
+        user.setPassword(utilService.generateRandomPassword(10));
+        user.setActive(true);
+        userStorage.put(user.getId(), user);
+        return user.getId();
     }
 
 }

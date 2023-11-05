@@ -3,7 +3,7 @@ package com.example.gym.service;
 import com.example.gym.dao.TraineeDAO;
 import com.example.gym.dto.TraineeRequestDto;
 import com.example.gym.exception.InvalidInputException;
-import com.example.gym.exception.UserNotFoundException;
+import com.example.gym.exception.NotFoundException;
 import com.example.gym.models.Trainee;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,7 +66,7 @@ public class TraineeService {
      * @param id                The unique identifier of the Trainee to be updated.
      * @param traineeRequestDto The TraineeRequestDto containing the updated information.
      * @return The updated Trainee entity.
-     * @throws UserNotFoundException When the Trainee with the specified ID is not found.
+     * @throws NotFoundException When the Trainee with the specified ID is not found.
      */
     public Trainee update(UUID id, TraineeRequestDto traineeRequestDto) {
         return traineeDAO.update(id, traineeRequestDto);

@@ -5,7 +5,7 @@ import com.example.gym.dao.TrainerDAO;
 import com.example.gym.dao.TrainingDAO;
 import com.example.gym.dto.TrainingRequestDto;
 import com.example.gym.exception.InvalidInputException;
-import com.example.gym.exception.UserNotFoundException;
+import com.example.gym.exception.NotFoundException;
 import com.example.gym.models.Trainee;
 import com.example.gym.models.Trainer;
 import com.example.gym.models.Training;
@@ -17,10 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Implementation of the TrainingDAO interface for managing Training entities.
@@ -94,11 +91,11 @@ public class TrainingDAOImpl implements TrainingDAO {
         training.setTrainingTypeId(trainingType.getId());
         Optional<Trainee> optionalTrainee = traineeDAO.findById(trainingRequestDto.getTraineeId());
         if (optionalTrainee.isEmpty()) {
-            throw new UserNotFoundException("Trainee with " + trainingRequestDto.getTraineeId() + " Not found");
+            throw new NotFoundException("Trainee with " + trainingRequestDto.getTraineeId() + " Not found");
         }
         Optional<Trainer> optionalTrainer = trainerDAO.findById(trainingRequestDto.getTrainerId());
         if (optionalTrainer.isEmpty()) {
-            throw new UserNotFoundException("Trainer with " + trainingRequestDto.getTraineeId() + " Not found");
+            throw new NotFoundException("Trainer with " + trainingRequestDto.getTraineeId() + " Not found");
         }
         training.setTrainerId(trainingRequestDto.getTrainerId());
         training.setTraineeId(trainingRequestDto.getTraineeId());
@@ -114,7 +111,7 @@ public class TrainingDAOImpl implements TrainingDAO {
 
     @Override
     public List<Training> findAll() {
-        return (List<Training>) trainingStorage.values();
+        return new ArrayList<>(trainingStorage.values());
     }
 
     @Override
@@ -127,6 +124,7 @@ public class TrainingDAOImpl implements TrainingDAO {
             trainingTypeStorage.remove(trainingOptional.get().getTrainingTypeId());
         } else {
             logger.error("Training not found");
+            throw new NotFoundException("Training not found");
         }
     }
 
@@ -134,7 +132,7 @@ public class TrainingDAOImpl implements TrainingDAO {
     public Training update(UUID id, TrainingRequestDto trainingRequestDto) {
         Optional<Training> optionalTraining = findById(id);
         if (optionalTraining.isEmpty()) {
-            throw new UserNotFoundException("Training with ID: " + id + " not found !");
+            throw new NotFoundException("Training with ID: " + id + " not found !");
         }
 
         Training training = optionalTraining.get();
@@ -160,7 +158,7 @@ public class TrainingDAOImpl implements TrainingDAO {
         if (trainingRequestDto.getTraineeId() != null) {
             Optional<Trainee> optionalTrainee = traineeDAO.findById(trainingRequestDto.getTraineeId());
             if (optionalTrainee.isEmpty()) {
-                throw new UserNotFoundException("Trainee with ID: " + trainingRequestDto.getTraineeId() + " not found");
+                throw new NotFoundException("Trainee with ID: " + trainingRequestDto.getTraineeId() + " not found");
             }
             training.setTraineeId(trainingRequestDto.getTraineeId());
         }
@@ -168,7 +166,7 @@ public class TrainingDAOImpl implements TrainingDAO {
         if (trainingRequestDto.getTrainerId() != null) {
             Optional<Trainer> optionalTrainer = trainerDAO.findById(trainingRequestDto.getTrainerId());
             if (optionalTrainer.isEmpty()) {
-                throw new UserNotFoundException("Trainer with ID: " + trainingRequestDto.getTrainerId() + " not found");
+                throw new NotFoundException("Trainer with ID: " + trainingRequestDto.getTrainerId() + " not found");
             }
             training.setTrainerId(trainingRequestDto.getTrainerId());
         }

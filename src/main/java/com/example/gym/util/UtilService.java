@@ -53,7 +53,6 @@ public class UtilService {
 
     public boolean isValid(String name) {
         return name != null && !name.trim().isEmpty();
-
     }
 
     public boolean usernameExists(Map<UUID, User> users, String username) {

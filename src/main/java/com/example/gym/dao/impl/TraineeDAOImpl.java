@@ -3,7 +3,7 @@ package com.example.gym.dao.impl;
 import com.example.gym.dao.TraineeDAO;
 import com.example.gym.dto.TraineeRequestDto;
 import com.example.gym.exception.InvalidInputException;
-import com.example.gym.exception.UserNotFoundException;
+import com.example.gym.exception.NotFoundException;
 import com.example.gym.models.Trainee;
 import com.example.gym.models.User;
 import com.example.gym.service.InMemoryStorage;
@@ -13,10 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Implementation of the TraineeDAO interface for managing Trainee entities.
@@ -55,16 +52,10 @@ public class TraineeDAOImpl implements TraineeDAO {
             logger.error("Invalid firstname or lastname ");
             throw new InvalidInputException("Invalid firstname or lastname");
         }
-        user.setId(utilService.generateUniqueKey(userStorage));
         trainee.setId(utilService.generateUniqueKey(traineeStorage));
-        trainee.setUserId(user.getId());
-        user.setFirstName(traineeRequestDto.getFirstName());
-        user.setLastName(traineeRequestDto.getLastName());
         trainee.setAddress(traineeRequestDto.getAddress());
-        utilService.generateUsername(user.getFirstName(), user.getLastName(), userStorage);
-        utilService.generateRandomPassword(10);
+        trainee.setUserId(saveUser(user,traineeRequestDto));
         traineeStorage.put(trainee.getId(), trainee);
-        userStorage.put(user.getId(), user);
         logger.info("Trainee successfully created");
         return trainee;
     }
@@ -76,7 +67,7 @@ public class TraineeDAOImpl implements TraineeDAO {
 
     @Override
     public List<Trainee> findAll() {
-        return (List<Trainee>) traineeStorage.values();
+        return new ArrayList<>(traineeStorage.values());
     }
 
     @Override
@@ -87,13 +78,14 @@ public class TraineeDAOImpl implements TraineeDAO {
             traineeStorage.remove(id);
         } else {
             logger.error("Trainee not found");
+            throw new NotFoundException("Trainee not found");
         }
     }
 
     @Override
     public Trainee update(UUID id, TraineeRequestDto traineeRequestDto) {
         if (!traineeStorage.containsKey(id)) {
-            throw new UserNotFoundException("Trainee not found with ID: " + id);
+            throw new NotFoundException("Trainee not found with ID: " + id);
         }
         Trainee trainee = traineeStorage.get(id);
         UUID userId = trainee.getUserId();
@@ -111,4 +103,14 @@ public class TraineeDAOImpl implements TraineeDAO {
         return trainee;
     }
 
+    private UUID saveUser(User user,TraineeRequestDto traineeRequestDto){
+        user.setId(utilService.generateUniqueKey(userStorage));
+        user.setFirstName(traineeRequestDto.getFirstName());
+        user.setLastName(traineeRequestDto.getLastName());
+        user.setUsername(utilService.generateUsername(user.getFirstName(), user.getLastName(), userStorage));
+        user.setPassword(utilService.generateRandomPassword(10));
+        user.setActive(true);
+        userStorage.put(user.getId(), user);
+        return user.getId();
+    }
 }

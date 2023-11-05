@@ -32,5 +32,14 @@ public class Trainee {
     public int hashCode() {
         return Objects.hash(id, userId, address);
     }
+
+    @Override
+    public String toString() {
+        return "Trainee{" +
+                "id=" + id +
+                ", userId=" + userId +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }
 

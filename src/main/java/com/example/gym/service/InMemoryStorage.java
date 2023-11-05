@@ -20,17 +20,17 @@ import java.util.UUID;
 @Data
 @Component
 public class InMemoryStorage {
-    private final Map<UUID, Trainer> trainerStorage = new HashMap<>();
+    private Map<UUID, Trainer> trainerStorage = new HashMap<>();
 
-    private final Map<UUID, Trainee> traineeStorage = new HashMap<>();
+    private Map<UUID, Trainee> traineeStorage = new HashMap<>();
 
-    private final Map<UUID, Training> trainingStorage = new HashMap<>();
+    private Map<UUID, Training> trainingStorage = new HashMap<>();
 
-    private final Map<UUID, User> userStorage = new HashMap<>();
+    private Map<UUID, User> userStorage = new HashMap<>();
 
-    private final Map<UUID, TrainingType> trainingTypeStorage = new HashMap<>();
+    private Map<UUID, TrainingType> trainingTypeStorage = new HashMap<>();
 
-    private final UtilService utilService;
+    private UtilService utilService;
 
     private static final Logger logger = LoggerFactory.getLogger(InMemoryStorage.class);
 

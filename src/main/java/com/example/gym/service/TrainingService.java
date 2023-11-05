@@ -3,7 +3,7 @@ package com.example.gym.service;
 import com.example.gym.dao.TrainingDAO;
 import com.example.gym.dto.TrainingRequestDto;
 import com.example.gym.exception.InvalidInputException;
-import com.example.gym.exception.UserNotFoundException;
+import com.example.gym.exception.NotFoundException;
 import com.example.gym.models.Training;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,7 +27,7 @@ public class TrainingService {
      * @param trainingRequestDto The data required to create a new training record.
      * @return The newly created Training record.
      * @throws InvalidInputException if any required field is missing or invalid.
-     * @throws UserNotFoundException if the associated Trainee or Trainer does not exist.
+     * @throws NotFoundException if the associated Trainee or Trainer does not exist.
      */
     public Training save(TrainingRequestDto trainingRequestDto) {
         return trainingDAO.save(trainingRequestDto);
@@ -67,7 +67,7 @@ public class TrainingService {
      * @param id                 The unique ID of the training record to update.
      * @param trainingRequestDto The data used to update the training record.
      * @return The updated Training record.
-     * @throws UserNotFoundException if the associated Trainee or Trainer does not exist.
+     * @throws NotFoundException if the associated Trainee or Trainer does not exist.
      */
     public Training update(UUID id, TrainingRequestDto trainingRequestDto) {
         return trainingDAO.update(id, trainingRequestDto);
