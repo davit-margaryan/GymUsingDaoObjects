@@ -130,12 +130,11 @@ public class TrainingDAOImpl implements TrainingDAO {
 
     @Override
     public Training update(UUID id, TrainingRequestDto trainingRequestDto) {
-        Optional<Training> optionalTraining = findById(id);
-        if (optionalTraining.isEmpty()) {
-            throw new NotFoundException("Training with ID: " + id + " not found !");
+        if (!trainingStorage.containsKey(id)) {
+            throw new NotFoundException("Training not found with ID: " + id);
         }
+        Training training = trainingStorage.get(id);
 
-        Training training = optionalTraining.get();
 
         if (trainingRequestDto.getName() != null && !trainingRequestDto.getName().isEmpty()) {
             training.setName(trainingRequestDto.getName());

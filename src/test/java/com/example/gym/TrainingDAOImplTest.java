@@ -23,8 +23,7 @@ import java.time.ZoneId;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class TrainingDAOImplTest {
 
@@ -94,6 +93,41 @@ class TrainingDAOImplTest {
     }
 
     @Test
+    void testUpdateTrainingFound() {
+        UUID trainingId = UUID.randomUUID();
+        TrainingRequestDto updatedDto = createTrainingRequestDto();
+
+        Training training = mockTraining(trainingId);
+        trainingStorage.put(trainingId, training);
+
+        TrainingType trainingType = new TrainingType();
+        trainingType.setId(UUID.randomUUID());
+        trainingTypeStorage.put(trainingType.getId(), trainingType);
+
+        UUID traineeId = UUID.randomUUID();
+        Trainee trainee = mockTrainee(traineeId);
+        UUID trainerId = UUID.randomUUID();
+        Trainer trainer = mockTrainer(trainerId);
+        traineeStorage.put(traineeId, trainee);
+        trainerStorage.put(trainerId, trainer);
+
+        updatedDto.setTraineeId(traineeId);
+        updatedDto.setTrainerId(trainerId);
+
+        training.setTrainingTypeId(trainingType.getId());
+        when(trainingTypeStorage.get(training.getTrainingTypeId())).thenReturn(trainingType);
+        when(traineeDAO.findById(traineeId)).thenReturn(Optional.of(trainee));
+        when(trainerDAO.findById(trainerId)).thenReturn(Optional.of(trainer));
+        when(trainingTypeStorage.get(trainingType.getId())).thenReturn(trainingType);
+
+        trainingDAO.update(trainingId, updatedDto);
+
+        verify(training).setName(updatedDto.getName());
+        verify(training).setDate(updatedDto.getDate());
+    }
+
+
+    @Test
     void testFindById() {
         UUID trainingId = UUID.randomUUID();
         Training training = mockTraining(trainingId);
@@ -135,8 +169,6 @@ class TrainingDAOImplTest {
         training.setTraineeId(traineeId);
         training.setTrainerId(trainerId);
         trainingStorage.put(trainingId, training);
-        Trainee trainee = mockTrainee(traineeId);
-        Trainer trainer = mockTrainer(trainerId);
         trainingDAO.delete(trainingId);
         assertFalse(trainingStorage.containsKey(trainingId));
         assertFalse(traineeStorage.containsKey(traineeId));
